@@ -394,7 +394,6 @@ LIBBPF_1.3.0 {
 	global:
 		bpf_obj_pin_opts;
 		bpf_object__unpin;
-		bpf_object__set_verifier_type;
 		bpf_prog_detach_opts;
 		bpf_program__attach_netfilter;
 		bpf_program__attach_netkit;
@@ -416,6 +415,7 @@ LIBBPF_1.4.0 {
 		bpf_token_create;
 		btf__new_split;
 		btf_ext__raw_data;
+		bpf_object__set_verifier_type;
 } LIBBPF_1.3.0;
 
 LIBBPF_1.5.0 {
