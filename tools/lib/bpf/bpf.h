@@ -79,6 +79,7 @@ struct bpf_prog_load_opts {
 	__u32 prog_flags;
 	__u32 prog_ifindex;
 	__u32 kern_version;
+	__u32 bpf_verifier_type;
 
 	__u32 attach_btf_id;
 	__u32 attach_prog_fd;

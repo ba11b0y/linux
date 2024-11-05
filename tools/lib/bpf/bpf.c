@@ -261,6 +261,7 @@ int bpf_prog_load(enum bpf_prog_type prog_type,
 	memset(&attr, 0, attr_sz);
 
 	attr.prog_type = prog_type;
+	attr.bpf_verifier_type = OPTS_GET(opts, bpf_verifier_type,0);
 	attr.expected_attach_type = OPTS_GET(opts, expected_attach_type, 0);
 
 	attr.prog_btf_fd = OPTS_GET(opts, prog_btf_fd, 0);

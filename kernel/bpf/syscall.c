@@ -2696,6 +2696,7 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
 static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 {
 	enum bpf_prog_type type = attr->prog_type;
+	enum bpf_verifier_type verifier_type = attr->bpf_verifier_type;
 	struct bpf_prog *prog, *dst_prog = NULL;
 	struct btf *attach_btf = NULL;
 	struct bpf_token *token = NULL;
@@ -2905,9 +2906,15 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 		goto free_prog_sec;
 
 	/* run eBPF verifier */
-	err = bpf_check(&prog, attr, uattr, uattr_size);
-	if (err < 0)
-		goto free_used_maps;
+	pr_info("Verifier type: %d\n", verifier_type);
+	if (verifier_type == BPF_VERIFIER_TYPE_DEFAULT){
+		err = bpf_check(&prog, attr, uattr, uattr_size);
+		if (err < 0)
+			goto free_used_maps;
+	}else{
+		pr_info("Skipping default verifier");
+	}
+	
 
 	prog = bpf_prog_select_runtime(prog, &err);
 	if (err < 0)

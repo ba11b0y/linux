@@ -675,6 +675,7 @@ struct bpf_object {
 	char name[BPF_OBJ_NAME_LEN];
 	char license[64];
 	__u32 kern_version;
+	__u32 bpf_verifier_type;
 
 	struct bpf_program *programs;
 	size_t nr_programs;
@@ -4984,6 +4985,7 @@ bpf_object__probe_loading(struct bpf_object *obj)
 	LIBBPF_OPTS(bpf_prog_load_opts, opts,
 		.token_fd = obj->token_fd,
 		.prog_flags = obj->token_fd ? BPF_F_TOKEN_FD : 0,
+		.bpf_verifier_type = obj->bpf_verifier_type,
 	);
 
 	if (obj->gen_loader)
@@ -8607,6 +8609,12 @@ static int check_path(const char *path)
 	}
 
 	return err;
+}
+
+int bpf_object__set_verifier_type(struct bpf_object *obj, __u32 verifier_type)
+{
+	obj->bpf_verifier_type = verifier_type;
+	return 0;
 }
 
 int bpf_program__pin(struct bpf_program *prog, const char *path)

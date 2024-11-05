@@ -1119,6 +1119,11 @@ enum bpf_attach_type {
 	__MAX_BPF_ATTACH_TYPE
 };
 
+enum bpf_verifier_type {
+	BPF_VERIFIER_TYPE_DEFAULT,
+	BPF_VERIFIER_TYPE_PREVAIL,
+};
+
 #define MAX_BPF_ATTACH_TYPE __MAX_BPF_ATTACH_TYPE
 
 enum bpf_link_type {
@@ -1527,6 +1532,7 @@ union bpf_attr {
 
 	struct { /* anonymous struct used by BPF_PROG_LOAD command */
 		__u32		prog_type;	/* one of enum bpf_prog_type */
+		__u32		bpf_verifier_type; /* one of enum bpf_verifier_type */
 		__u32		insn_cnt;
 		__aligned_u64	insns;
 		__aligned_u64	license;
