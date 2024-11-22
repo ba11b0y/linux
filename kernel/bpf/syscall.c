@@ -39,6 +39,7 @@
 #include <net/netfilter/nf_bpf_link.h>
 #include <net/netkit.h>
 #include <net/tcx.h>
+#include "netlink.c"
 
 #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
 			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
@@ -71,6 +72,8 @@ static const struct bpf_map_ops * const bpf_map_types[] = {
 #undef BPF_MAP_TYPE
 #undef BPF_LINK_TYPE
 };
+
+static int send_msg_netlink_sock(int verifier_id);
 
 /*
  * If we're handed a bigger struct than we know of, ensure all the unknown bits
@@ -2912,6 +2915,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 		if (err < 0)
 			goto free_used_maps;
 	}else{
+		send_msg_netlink_sock(verifier_type);
 		pr_info("Skipping default verifier");
 	}
 	
