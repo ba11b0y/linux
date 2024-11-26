@@ -39,6 +39,7 @@
 #include <net/netfilter/nf_bpf_link.h>
 #include <net/netkit.h>
 #include <net/tcx.h>
+#include "netlink.c"
 
 #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
 			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
@@ -71,6 +72,8 @@ static const struct bpf_map_ops * const bpf_map_types[] = {
 #undef BPF_MAP_TYPE
 #undef BPF_LINK_TYPE
 };
+
+static int send_msg_netlink_sock(int verifier_id);
 
 /*
  * If we're handed a bigger struct than we know of, ensure all the unknown bits
@@ -2634,6 +2637,7 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
 static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 {
 	enum bpf_prog_type type = attr->prog_type;
+	enum bpf_verifier_type verifier_type = attr->bpf_verifier_type;
 	struct bpf_prog *prog, *dst_prog = NULL;
 	struct btf *attach_btf = NULL;
 	struct bpf_token *token = NULL;
@@ -2843,9 +2847,16 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 		goto free_prog_sec;
 
 	/* run eBPF verifier */
-	err = bpf_check(&prog, attr, uattr, uattr_size);
-	if (err < 0)
-		goto free_used_maps;
+	pr_info("Verifier type: %d\n", verifier_type);
+	if (verifier_type == BPF_VERIFIER_TYPE_DEFAULT){
+		err = bpf_check(&prog, attr, uattr, uattr_size);
+		if (err < 0)
+			goto free_used_maps;
+	}else{
+		send_msg_netlink_sock(verifier_type);
+		pr_info("Skipping default verifier");
+	}
+	
 
 	prog = bpf_prog_select_runtime(prog, &err);
 	if (err < 0)

@@ -397,6 +397,15 @@ LIBBPF_API size_t bpf_program__insn_cnt(const struct bpf_program *prog);
 LIBBPF_API int bpf_program__fd(const struct bpf_program *prog);
 
 /**
+ * @brief **bpf_verifier__set_type()** sets the bpf_verifier_type
+ *
+ * @param obj BPF obj
+ * @param verifier_type the verifier type
+ * @return 0 always.
+ */
+LIBBPF_API int bpf_object__set_verifier_type(struct bpf_object *obj, __u32 verifier_type);
+
+/**
  * @brief **bpf_program__pin()** pins the BPF program to a file
  * in the BPF FS specified by a path. This increments the programs
  * reference count, allowing it to stay loaded after the process
